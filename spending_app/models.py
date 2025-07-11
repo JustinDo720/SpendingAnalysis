@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 
 # Create your models here.
 
@@ -7,13 +8,30 @@ class Category(models.Model):
         Each Transaction should be tied to a specific category
 
         category_name: The name of our category 
+        slug: Identifier for the category 
     """
     category_name = models.CharField(max_length=125, unique=True)
+    slug = models.SlugField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.category_name)
+            gen_slug = base_slug
+            cnt = 1
+
+            while Category.objects.filter(slug=gen_slug).exists():
+                gen_slug = f'{base_slug}-{cnt}'
+                cnt += 1
+            
+            self.slug = gen_slug
+        
+        # Regardless we need to super save 
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.category_name
 
-class Transations(models.Model):
+class Transactions(models.Model):
     """
         Each Transaction instance is within the CSV 
 

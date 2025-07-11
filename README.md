@@ -32,3 +32,17 @@ Date,Vendor,Category,Amount
 2025-06-10,Uber,Transport,25.00
 ```
 
+## Development Tracking 
+
+**07/11/25**
+- Django + Django Restframework 
+- Added URLS and built Default Routers 
+- Set Default Authentication as `SessionAuthentication` 
+- Set Default Permission to `IsAuthenticatedOrReadOnly`
+- Added Authentication urls: `path('api-auth/', include('rest_framework.urls')),`
+- Created Category Viewset for full CRUD 
+- Created Home Page functional API view to return the **reverse** links to all of our API 
+- Made Transactions ListCreate + RetrieveUpdateDelete API views 
+- Tied hyperlinks to each view via (URL in serializer)
+
+Result: Full CRUD operations on Transactions + Categories with hyperlinks and customized Serializers.
