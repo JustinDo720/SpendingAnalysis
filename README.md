@@ -32,6 +32,8 @@ Date,Vendor,Category,Amount
 2025-06-10,Uber,Transport,25.00
 ```
 
+[Sample CSV File](sample_transactions.csv) 
+
 ## Development Tracking 
 
 **07/11/25**
@@ -46,3 +48,23 @@ Date,Vendor,Category,Amount
 - Tied hyperlinks to each view via (URL in serializer)
 
 Result: Full CRUD operations on Transactions + Categories with hyperlinks and customized Serializers.
+
+---
+
+**07/12/25**
+- Planning for API Accept CSV 
+  - Pandas data manipulation 
+  - Return meaningful/actionable insights 
+- `ListCreate` now accepts CSV, creates Category: `get_or_create` builds transactions, Provides summary 
+- Hyperlink Transactions --> File Upload 
+- Individual File Upload URL should direct us to a summary + nested Transactions 
+- Summary => Rebuild all the data from **prefetched transactions**, Dataframe then:
+  - Total Spent
+  - Spending Per Category: Group By Category, Access Amount, Sum, Sort via Descdening, Transform to Dictionary 
+  - Top Vendors: Group By Vendor, Access Amount, Sum, Sort via Descdening, Head(n), Transform to Dictionary
+- Summary Url => `SerializerMethodField` 
+  - Make sure we get request through: `self.context.get('request')` and we're using `from rest_framework.reverse import reverse`
+  - `reverse('api_name', args=[obj.id], request=request, format=None)`
+  - Need to supply the id since we have `<int:upload_id>` in our url 
+  
+Result: API View accepts CSV Uploads, creates Transactions + Categories. Summary API for files based on related transactions.
