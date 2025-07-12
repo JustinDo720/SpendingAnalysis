@@ -11,5 +11,10 @@ urlpatterns = [
     path('', include(router.urls)),
     # Transactions
     path('transactions/', views.ListCreateTransactionAPIView.as_view(), name='transaction-list-create'),
-    path('transactions/<int:pk>/', views.TransactionDetailsAPIView.as_view(), name='transactions-detail')
+    path('transactions/<int:pk>/', views.TransactionDetailsAPIView.as_view(), name='transactions-detail'),
+    # Upload CSV Transactions 
+    path('uploads/', views.TransactionUploadAPIView.as_view(), name='transaction-uploads-list-create'),
+    path('uploads/<int:id>/', views.TransactionUploadDetailsAPIView.as_view(), name='transaction-uploads-detail'),
+    # Summary 
+    path('uploads/<int:upload_id>/summary/', views.TransactionSummaryAPIView.as_view(), name='summary-transaction-uploads')
 ]
