@@ -76,3 +76,5 @@ Result: API View accepts CSV Uploads, creates Transactions + Categories. Summary
 - Connected Frontend with CSV Upload 
 
 Result: React frontend works with uploaded CSV files + Displays Summary Report
+
+<img src='spending_analysis_demo1.gif'>
