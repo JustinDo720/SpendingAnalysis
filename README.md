@@ -68,3 +68,11 @@ Result: Full CRUD operations on Transactions + Categories with hyperlinks and cu
   - Need to supply the id since we have `<int:upload_id>` in our url 
   
 Result: API View accepts CSV Uploads, creates Transactions + Categories. Summary API for files based on related transactions.
+
+**07/14/25**
+- Corsheaders for React Frontend 
+- `"corsheaders"` in settings.py and `pip install django-cors-headers`
+- Disabled Permissions because we are not using SJWT
+- Connected Frontend with CSV Upload 
+
+Result: React frontend works with uploaded CSV files + Displays Summary Report
