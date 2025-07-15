@@ -78,3 +78,18 @@ Result: API View accepts CSV Uploads, creates Transactions + Categories. Summary
 Result: React frontend works with uploaded CSV files + Displays Summary Report
 
 <img src='spending_analysis_demo1.gif'>
+
+**07/15/25**
+- Plans:
+  - Improve Summary? (Monthly Totals (money/time)-> Category Growth (% increase/decrease))
+  - Build Dashbaord for file uploads + Summary access
+  - Look into how Tableau could help our App (FastAPI/Flask Microservice)
+  - AI plans -> Smart summaries -> Translate raw analytics into executive-friendly reports or actionable suggestions (FastAPI/Flask Microservice)
+- Added Media Root + Url to `urls.py` using: `MEDIA_URL = os.path.join(BASE_URL, 'media')`
+- File Name instance method for serializer to display individual file names
+- Summary now includes
+  - Number of **Categories**, **Vendors** 
+  - Date Range **Max** and **Min**
+  - **Spending per Vendor**
+  
+Result: More information on Summary to display on frontend. Media Files are viewable locally. Plans for microservices.

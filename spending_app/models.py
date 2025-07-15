@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+import os
 
 # Create your models here.
 
@@ -35,6 +36,9 @@ class Category(models.Model):
 class TransactionUploads(models.Model):
     file = models.FileField(upload_to='transaction_uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def get_file_name(self):
+        return os.path.basename(self.file.name)
 
 
 class Transactions(models.Model):

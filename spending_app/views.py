@@ -238,12 +238,21 @@ class TransactionSummaryAPIView(APIView):
 
         # Meaningful Insights
         total_spent = round(df['amount'].sum(),2)
+        total_transactions = len(related_transactions)
         spending_per_category = df.groupby('category')['amount'].sum().sort_values(ascending=False).to_dict()
+        spending_per_vendor = df.groupby('vendor')['amount'].sum().sort_values(ascending=False).to_dict()
         # We could use head(n) to grab n rows (Since its already sorted the top will be the most spent)
         top_vendors = df.groupby('vendor')['amount'].sum().sort_values(ascending=False).head(5).to_dict()
+        vendor_count = len(df.groupby('vendor'))
 
         return Response({
             'total_spent': total_spent,
+            'total_transactions': total_transactions,
+            'unique_categories': len(spending_per_category),
             'spending_per_category': spending_per_category,
-            'top_vendors': top_vendors
+            'spending_per_vendor': spending_per_vendor,
+            'top_vendors': top_vendors,
+            'unique_vendors': vendor_count,
+            'begin_date': df['date'].min(),
+            'end_date': df['date'].max()
         })
