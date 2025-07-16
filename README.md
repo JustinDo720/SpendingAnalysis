@@ -93,3 +93,15 @@ Result: React frontend works with uploaded CSV files + Displays Summary Report
   - **Spending per Vendor**
   
 Result: More information on Summary to display on frontend. Media Files are viewable locally. Plans for microservices.
+
+
+**07/16/25**
+- **WeasyPrint** for Template -> PDF 
+- Django Bootstrap CDN for templates (Need the **Bootstrap.min.css** static files instead: [here](https://getbootstrap.com/docs/5.3/getting-started/download/))
+- [GTK for WeasyPrint](https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases)
+  - If Production make sure you dockerize your container with this dependencny 
+- WeasyPrint need `base_url` to access our static files 
+- Use Django `HTTPResponse` to set the content type as `application/pdf` 
+- Proviide the `Content-Disposition` as `attachment; file="filename_here.pdf"`
+
+Result: API View that downloads a PDF version of our template based on HTML string.

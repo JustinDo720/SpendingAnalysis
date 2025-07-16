@@ -8,7 +8,9 @@ from rest_framework.reverse import reverse
 from .models import Category, Transactions, TransactionUploads
 from .serializers import CategoryReadSerializer, CategoryWriteSerializer, CategoryRetrieveSerializer, TransactionReadSerializer, TransactionWriteSerializer, TransactionUploadsSerializer, TransactionDetailsSerializer
 import pandas as pd
-
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -224,35 +226,32 @@ class TransactionSummaryAPIView(APIView):
         # Prefetch transactions for one bulky query instead of opening the DB again and again
         upload = TransactionUploads.objects.prefetch_related('transactions').get(id=upload_id)
         # Now when we do upload.transactions.all() we don't open the DB again since its prefetchedc
-        related_transactions = upload.transactions.all()
+        prefetched_transactions = upload.transactions.all()
+        summary = upload.get_summary(prefetched_transactions)
 
-        # Rebuilding Data for Dataframe 
-        data = [{
-            'vendor': t.vendor,
-            'amount': float(t.amount),
-            'date': t.date,
-            'category': t.category.category_name
-        } for t in related_transactions]
+        return Response(summary)
 
-        df = pd.DataFrame(data)
+class TransactionPDFView(APIView):
+    """
+        Downloading a summary report 
+    """
 
-        # Meaningful Insights
-        total_spent = round(df['amount'].sum(),2)
-        total_transactions = len(related_transactions)
-        spending_per_category = df.groupby('category')['amount'].sum().sort_values(ascending=False).to_dict()
-        spending_per_vendor = df.groupby('vendor')['amount'].sum().sort_values(ascending=False).to_dict()
-        # We could use head(n) to grab n rows (Since its already sorted the top will be the most spent)
-        top_vendors = df.groupby('vendor')['amount'].sum().sort_values(ascending=False).head(5).to_dict()
-        vendor_count = len(df.groupby('vendor'))
+    def get(self, request, upload_id):
+        upload = TransactionUploads.objects.prefetch_related('transactions').get(id=upload_id)
+        prefetched_transactions = upload.transactions.all()
+        summary = upload.get_summary(prefetched_transactions)
 
-        return Response({
-            'total_spent': total_spent,
-            'total_transactions': total_transactions,
-            'unique_categories': len(spending_per_category),
-            'spending_per_category': spending_per_category,
-            'spending_per_vendor': spending_per_vendor,
-            'top_vendors': top_vendors,
-            'unique_vendors': vendor_count,
-            'begin_date': df['date'].min(),
-            'end_date': df['date'].max()
+        # Using HTML to String so we could pass this through WeasyPrint 
+        # By passing context we could now use this context in our HTML template
+        html_str = render_to_string('reports/summary_report.html', {
+            'file_name': upload.get_file_name(),
+            'summary': summary
         })
+
+        # Must provode base_url because of static files 
+        weasy_html = HTML(string=html_str, base_url=request.build_absolute_uri())
+        pdf = weasy_html.write_pdf()
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{upload.get_file_name().split('.')[0]}_summary_report.pdf"'
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+        return response

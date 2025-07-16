@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <title>SA - Summary Report</title>
+    </head>
+    <body>
+        <div class="container text-center mt-3">
+            {# Page 1 #}
+            <div class="row justify-content-md-center mt-3">
+                <div class="row justify-content-md-center">
+                    <h1>Spending Summary Report</h1>
+                </div>
+                <div class="row justify-content-md-center mt-3">
+                    <div class="card border-dark text-bg-dark mb-3">
+                        <div class="card-body">
+                            <h3 class="card-title fw-semibold">{{ file_name }}</h3>
+                        </div>
+                        <ul class="list-group list-group-flush mb-2">
+                            <li class="list-group-item">
+                                <b>Total Spent:</b> ${{summary.total_spent}}
+                            </li>
+                            <li class="list-group-item">
+                                <b>Number of Transactions:</b> {{summary.total_transactions}}
+                            </li>
+                            <li class="list-group-item">
+                                <b>Number of Categories:</b> {{summary.unique_categories}}
+                            </li>
+                            <li class="list-group-item">
+                                <b>Number of Vendors:</b> {{summary.unique_vendors}}  
+                            </li>
+                            <li class="list-group-item">
+                                <b>Date Range:</b>  {{summary.begin_date|date:"M d, Y" }} - {{summary.end_date|date:"M d, Y" }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {# Page 2 #}
+            <div class="row justify-content-md-center mt-3">
+                    <div class="row justify-content-md-center">
+                        <h1>Spending Per Vendor</h1>
+                    </div>
+                    <div class="row justify-content-md-center mt-3">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Vendor</th>
+                                        <th scope="col">Amount ($)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vendor , amount in summary.spending_per_vendor.items %}
+                                        <tr {% if forloop.counter <= 5 %} class='table-success fw-bold' {% endif %}>
+                                            <td>{{ vendor|title  }}</td>
+                                            <td> {{amount|floatformat:2 }} </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                    <div>
+            </div>
+            {# Page 3 #}
+            <div class="row justify-content-md-center mt-3">
+                <div class="row justify-content-md-center">
+                    <h1>Spending Per Category</h1>
+                </div>
+                <div class="row justify-content-md-center mt-3">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Category</th>
+                                    <th scope="col">Amount ($)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category , amount in summary.spending_per_category.items %}
+                                    <tr {% if forloop.counter <= 3 %} class='table-success fw-bold' {% endif %}>
+                                        <td>{{ category|title  }}</td>
+                                        <td> {{amount|floatformat:2 }} </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                <div>
+            </div>
+        </div>
+    </body>
+</html>
