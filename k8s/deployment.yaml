@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spending-analysis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spending-analysis
+  template:
+    metadata:
+      labels:
+        app: spending-analysis
+    spec:
+      containers:
+      - name: spending-analysis-container
+        image: spendinganalysis-web:latest  # or local image name
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        
+
+

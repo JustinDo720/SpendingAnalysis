@@ -105,3 +105,115 @@ Result: More information on Summary to display on frontend. Media Files are view
 - Proviide the `Content-Disposition` as `attachment; file="filename_here.pdf"`
 
 Result: API View that downloads a PDF version of our template based on HTML string.
+
+
+**07/17/25**
+- Docker + Kubernetes Deploy 
+- Dockerize Django 
+  - Staticfiles: `STATIC_ROOT` 
+
+Dockerfile:
+```
+# Base Image
+FROM python:3.10-slim
+
+# No Bytecode + unbuffered 
+ENV PYTHONDONTWRITEBYTECODE = 1
+ENV PYTHONUNBUFFERED = 1
+
+# GTK Requirements for WeasyPrint
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpango-1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    libglib2.0-0 \
+    libcairo2 \
+    libpangoft2-1.0-0 \
+    libpangocairo-1.0-0 \
+    libxml2 \
+    libxslt1.1 \
+    libjpeg-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+Dockerfile: Create WD, Copy + Install requirements, Copy the entire project then collect static files:
+
+```
+# Create WD
+WORKDIR /app
+
+# Copy and Install requirements 
+COPY requirements.txt . 
+RUN pip install -r requirements.txt 
+
+# Copy the entire project 
+COPY . .
+
+# Collecting static files 
+python manage.py collectstatic
+```
+
+Dockerfile: Gunicorn to run application based on WSGI 
+
+```
+CMD ["gunicorn", "spending_analysis.wsgi:application", "--bind", "0.0.0.0:8000"]
+```
+
+Docker-Compose: Set Version, Build your DJango Webservice
+
+```
+version: '3.9'
+
+services:
+  # Django Spending Analysis
+  web:
+    build: .
+    container_name: spending_analysis
+    command: gunicorn spending_analysis.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - ./staticfiles:/app/staticfiles
+    ports:
+      - "8000:8000"
+    depends_on:
+      - weasydeps
+
+```
+- Conttainer Name 
+- Command 
+- Volumes -> we set our staticfiles 
+- Expose the port 
+- Depends on weasydeps which we'll build next 
+
+
+```
+  weasydeps:
+    image: alpine
+    container_name: weasydeps
+    command: tail -f /dev/null  # dummy container if you want to later separate GTK deps
+```
+- Secondary service for our dependencies 
+
+```bash
+docker-compose build
+docker-compose up 
+```
+1) Make sure staticfiles is there
+2) access the shell: `docker exec -it container_name bash`
+3) migrate database: `python manage.py migrate`
+
+## Kubernetes?
+
+**K8s Cluster** is a set of **nodes** that run *containzered* application. **Master Node** manages cluster for **pods** to handle scaling, updates etc. **Worker Nodes** that runs your application in **pods**.
+
+How do we deploy our containerized applicaiton on Kubernetes?
+- After **containerized application** we want to spin up a **pod** which wraps around our container to run on a **Worker Node**
+  - `k8s/deployment.yaml`: **container image** -->  deployment name 
+  - `k8s/service.yaml`: exposes Pod on a port 
+- Enable Kubernetes on Docker Desktop
+  - `kubectl appply -f` to both the deployment + service 
+  - `kubectl get svc podname` we get podname with `kubectl get pods`
+  - Go to your port and now: Containerized Application running inside a **Pod** on a **Worker Node** that is managed by the **Master Nod (Control Plane)** within the **Kubernetes Cluster**
+    -   
