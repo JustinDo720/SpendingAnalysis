@@ -252,6 +252,7 @@ class TransactionPDFView(APIView):
         weasy_html = HTML(string=html_str, base_url=request.build_absolute_uri())
         pdf = weasy_html.write_pdf()
         response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{upload.get_file_name().split('.')[0]}_summary_report.pdf"'
+        filename = upload.get_file_name().split('.')[0]
+        response['Content-Disposition'] = f'attachment; filename="{filename}_summary_report.pdf"'
         response['Access-Control-Expose-Headers'] = 'Content-Disposition'
         return response
