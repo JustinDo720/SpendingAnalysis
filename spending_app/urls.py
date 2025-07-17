@@ -16,5 +16,6 @@ urlpatterns = [
     path('uploads/', views.TransactionUploadAPIView.as_view(), name='transaction-uploads-list-create'),
     path('uploads/<int:id>/', views.TransactionUploadDetailsAPIView.as_view(), name='transaction-uploads-detail'),
     # Summary 
-    path('uploads/<int:upload_id>/summary/', views.TransactionSummaryAPIView.as_view(), name='summary-transaction-uploads')
+    path('uploads/<int:upload_id>/summary/', views.TransactionSummaryAPIView.as_view(), name='summary-transaction-uploads'),
+    path('uploads/<int:upload_id>/summary/download/', views.TransactionPDFView.as_view(), name='summary-transaction-uploads-download')
 ]

@@ -96,11 +96,17 @@ class CategoryWriteSerializer(serializers.ModelSerializer):
         )
 
 class TransactionUploadsSerializer(serializers.HyperlinkedModelSerializer):
+    file_name = serializers.SerializerMethodField()
+
+    def get_file_name(self, upload):
+        return upload.get_file_name()
+
     class Meta:
         model = TransactionUploads
         fields = [
             'id',
             'file',
+            'file_name',
             'uploaded_at',
             'url'
         ]
