@@ -162,9 +162,9 @@ class TransactionUploadAPIView(generics.ListCreateAPIView):
             df['Category'] = df['Category'].str.strip().str.lower()     # Remove White Spaces + Lower because we'll be adding them into Category model
             df['Amount'] = df['Amount'].astype(float)
             # Making sure our date follows the right format 
-            df['Date'] = pd.to_datetime(df['Date'], errors='coerce')    # coerce just fills in NA if time isn't valid 
+            df['Date'] = df['Date'].astype(str).str.strip()
+            df['Date'] = pd.to_datetime(df['Date'], format='%b-%d-%Y', errors='coerce')    # coerce just fills in NA if time isn't valid 
             df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')   # We could use .dt to transform into date time 
-
 
             # Create Categories if not exists
             # Insert Transactions 
@@ -209,7 +209,7 @@ class TransactionUploadDetailsAPIView(generics.RetrieveDestroyAPIView):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
     
-    def delete(self, request):
+    def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.delete()
         return Response({

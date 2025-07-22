@@ -216,4 +216,25 @@ How do we deploy our containerized applicaiton on Kubernetes?
   - `kubectl appply -f` to both the deployment + service 
   - `kubectl get svc podname` we get podname with `kubectl get pods`
   - Go to your port and now: Containerized Application running inside a **Pod** on a **Worker Node** that is managed by the **Master Nod (Control Plane)** within the **Kubernetes Cluster**
-    -   
+
+
+## Snowflake? Datapipelines? Dagster?
+
+DataPipeline:
+1) Ingest: Fetching JSON or Data 
+2) Load: Store in Snowflake 
+3) Transofrm: Flatten out some fields 
+4) Consume: BI Tool or other API reads from Snowflake
+
+> ETL (Extract Transofrm Load) FastAPI for SwaggerUI that calls my Django Backend for all the uploaded files... 
+> 
+> then for each uploaded files we'll transform them via Vertex AI (Adding on more insightful data) 
+> 
+> then loading this into snowflake.
+
+
+**07/22/25**
+- Issue with the Date in Pandas 
+- `df['Date'] = pd.to_datetime(df['Date'], format='%b-%d-%Y', errors='coerce')`
+  - We needed to set the format to read: `Dec-15-2025` and other dates in this format 
+- 
